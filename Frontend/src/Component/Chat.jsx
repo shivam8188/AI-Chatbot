@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import './chat.css';
+
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const messagesEndRef = useRef(null);
+
+  // Scroll to bottom automatically
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = { sender: 'user', text: input };
-    setMessages([...messages, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
-    
+
     try {
       const res = await fetch('http://localhost:3001/chat', {
         method: 'POST',
@@ -22,23 +30,36 @@ function Chat() {
       const botMessage = { sender: 'bot', text: data.reply };
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-      setMessages((prev) => [...prev, { sender: 'bot', text: 'Error contacting AI.' }]);
+      setMessages((prev) => [...prev, { sender: 'bot', text: '⚠️ Error contacting AI.' }]);
     }
   };
 
   return (
-    <div>
-      <div id='res' >
+    <div className="chat-container">
+      <div className="chat-header">Mini Chatbot 💬</div>
+
+      <div className="chat-box">
         {messages.map((msg, index) => (
-          <div key={index} style={{ margin: '0.3rem 0', color: msg.sender === 'user' ? 'blue' : 'green' }}>
-            <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+          <div
+            key={index}
+            className={`message ${msg.sender === 'user' ? 'user-message' : 'bot-message'}`}
+          >
+            <div className="message-text">{msg.text}</div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <input id="inputBox" type="text" value={input} placeholder="Type a message..." onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-        
-      />
-      <button onClick={sendMessage} style={{ marginLeft: '0.5rem' }}>Send</button>
+
+      <div className="input-area">
+        <input
+          type="text"
+          placeholder="Send a message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+        />
+        <button onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
 }
