@@ -20,7 +20,8 @@ function Chat() {
     setInput('');
 
     try {
-      const res = await fetch('https://ai-chatbot-backend-i0h5.onrender.com/chat', {
+      const url = "https://ai-chatbot-backend-i0h5.onrender.com"
+      const res = await fetch( url +'/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input }),
