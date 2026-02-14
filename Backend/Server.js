@@ -4,12 +4,20 @@ const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
+
 
 //const port = "https://ai-chatbot-frontend-e4bb.onrender.com/";
 
 
-app.use(cors());
+app.use(cors(
+
+  {
+  origin: "https://ai-chatbot-frontend-e4bb.onrender.com",
+  methods: ["GET", "POST"],
+  credentials: true
+}
+));
 app.use(express.json());
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
