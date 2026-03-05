@@ -1,8 +1,9 @@
 
 const express = require('express');
+const dotenv = require('dotenv');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -26,7 +27,7 @@ app.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const result = await model.generateContent(userMessage);
     const response = await result.response;
     const text = response.text();
